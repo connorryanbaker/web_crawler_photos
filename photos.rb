@@ -9,10 +9,13 @@ class Scraper
   def initialize(base)
     @base = base 
     @counter = 1
+    @dir_count = 1
     download_photos(@base)
   end 
 
   def download_photos(pg)
+    dir_name = @dir_count.to_s
+    Dir.mkdir(dir_name)
     page = Nokogiri::HTML(open(pg))
     photos = page.css("img").map { |photo| photo['src'] }
     photos.each do |url|
@@ -24,7 +27,7 @@ class Scraper
         puts "Error: #{e}"
         sleep 3
       else
-        File.open(fname_base + counter.to_s + tag, 'w') {|file| file.write(content)}
+        File.open("#{dir_name}/#{fname_base}#{counter.to_s}#{tag}", 'w') {|file| file.write(content)}
         puts "\t...saving to #{fname_base + counter.to_s + tag}"
       end
     @counter += 1 
@@ -42,11 +45,11 @@ class Scraper
 
   def visit_pages(links)
     links.each do |link|
+      @dir_count += 1
       new_url = @base + link
       download_photos(new_url)
     end 
     puts "Successfully downloaded #{@counter - 1} photos"
   end 
 end 
-
 
