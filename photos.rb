@@ -50,4 +50,3 @@ class Scraper
 end 
 
 
-Scraper.new("https://ashleynbreton.com")
